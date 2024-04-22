@@ -1,31 +1,44 @@
 import { View } from "react-native";
-
+import axios from "axios";
 import styles from "./styles";
 import Title from "../../components/Title";
 import { useState,useEffect } from "react";
 
-const [users, setUsers] = useState([]);
-const apiURl = process.env.EXPO_PUBLIC_API_URL;
 
 export default function Users() {
+  const [users, setUsers] = useState([]);
+
+const apiURl = process.env.EXPO_PUBLIC_API_URL;
+
 const getUsers = async () => {
   try{
-    const response = await fetch(`${apiURl}/users`);
-    const data = await response.json();
+const response = await axios.get(`${apiURl}/users`);
+const { data } = response;
     setUsers(data);;
   }catch(error){
     console.error("Erro ao buscar usuários", error);
-    res.status(500).send("Erro ao buscar usuários");
-
   }
 };
 useEffect(() => {  
   getUsers();
-  console.log(users);}, []);
+  console.log(users);
+}, []);
 
   return (
     <View style={styles.container}>
       <Title title="Usuarios" />
-    </View>
-  );
-}
+   {users ? (
+    users.map((user) => (
+        <View key={user.id} style={styles.user}>
+          <Text style={styles.userText}>{user.name}</Text>
+          <Text style={styles.userText}>{user.email}</Text>
+          <Text style={styles.userText}>{user.password}</Text>
+
+      
+        </View>
+   ))):(
+      <Title title="Carregando usuários" />
+    )}
+          </View>
+        );
+      }
